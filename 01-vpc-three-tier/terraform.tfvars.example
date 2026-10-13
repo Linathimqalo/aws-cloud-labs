@@ -1,0 +1,6 @@
+# Copy this file to terraform.tfvars and edit values as needed.
+# terraform.tfvars is gitignored, so your real values stay local.
+
+aws_region   = "eu-north-1"
+vpc_cidr     = "10.0.0.0/16"
+project_name = "vpc-three-tier"
