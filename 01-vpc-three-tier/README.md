@@ -42,7 +42,19 @@ To tear down:
 
 ## What I learned
 
-- (fill in after deployment)
+- Terraform plan output shows exactly what will be created, including
+  attribute values and cross-resource references. Reading the plan is a
+  discipline, not a formality.
+- The default VPC (172.31.0.0/16) coexists with the custom VPC. It is
+  created automatically and should not be deleted.
+- VPC Gateway Endpoints (S3, DynamoDB) are free and provide private
+  subnet access to those services without a NAT Gateway. NAT costs
+  about $32/month, so Endpoint is the correct default for stateless
+  object storage access.
+- Flow Logs require an IAM role with trust policy for the
+  vpc-flow-logs.amazonaws.com service. Terraform manages this cleanly.
+- Default tags applied at the provider level propagate to every
+  resource, which makes cost allocation and cleanup trivial.
 
 ## Screenshots
 
