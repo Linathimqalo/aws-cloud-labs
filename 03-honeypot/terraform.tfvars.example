@@ -1,0 +1,4 @@
+aws_region       = "eu-north-1"
+vpc_id           = "vpc-0e1a73df7de5b4a0d"
+public_subnet_id = "subnet-013db925b737f9e86"  # vpc-three-tier-public-a
+admin_cidr       = "YOUR_PUBLIC_IP/32"
