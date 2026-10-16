@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars to override defaults.
+
+aws_region                     = "eu-north-1"
+project_name                   = "lambda-s3-iam"
+bucket_prefix                  = "linathi-lambda-lab"
+log_retention_days             = 7
