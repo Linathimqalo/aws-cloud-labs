@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars if you want to override defaults.
+
+aws_region        = "eu-north-1"
+project_name      = "iam-access-analyzer"
+unused_access_age = 90
