@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and fill in the Project 1 IDs.
+
+aws_region                     = "eu-north-1"
+project_name                   = "ec2-rds-lab"
+
+# From Project 1:
+vpc_id                         = "vpc-0e1a73df7de5b4a0d"
+public_subnet_id               = "subnet-013db925b737f9e86"  # public-a
+private_data_subnet_id         = "subnet-0123a4ab2c6f2bdfe"  # data-a
+private_data_subnet_id_b       = "subnet-04eae0c16d2ff9b9a"  # data-b
+
+db_instance_class              = "db.t3.micro"
+db_allocated_storage           = 20
