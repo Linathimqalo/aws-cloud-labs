@@ -1,0 +1,5 @@
+aws_region   = "eu-north-1"
+project_name = "athena-cloudtrail"
+
+# IMPORTANT: Replace this with the exact name of your CloudTrail bucket from Project 7
+cloudtrail_bucket_name = "monitoring-detection-cloudtrail-106573904834"
