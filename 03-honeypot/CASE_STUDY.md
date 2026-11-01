@@ -59,3 +59,49 @@ Within 24 hours, Kibana became unresponsive. Investigation via `docker ps` showe
 - EBS 40GB: ~$0.67.
 - Data transfer: ~$1.00.
 - **Total: ~$16.67 for 7 days.**
+
+
+# Case Study: AWS T-Pot Honeypot Threat Analysis
+
+## Executive Summary
+This project documents the deployment of a high-interaction T-Pot multi-honeypot on AWS EC2. The goal was to capture, analyze, and visualize real-world cyber attacks targeting cloud infrastructure. Over a 17-day period, the instance captured over **662,000 attacks**, including SSH brute force, RDP exploitation, and SIP scanning. The project required overcoming memory constraints via swap provisioning and hardening the security groups to isolate the administrative dashboard while exposing the honeypot services to the public internet.
+
+## Architecture
+- **Compute:** AWS EC2 `m7i-flex.large` (2 vCPU, 8GB RAM)
+- **Operating System:** Ubuntu 24.04 LTS
+- **Containers:** 41 Docker containers managed by the T-Pot framework.
+- **Network:** Deployed in the Public Subnet of a custom VPC.
+
+## Security Design Decisions
+**Decision 1: Separation of Attack and Admin Planes**
+The security group exposed ports 1-64293 to `0.0.0.0/0` to capture attacks. However, administrative ports (64294-64300 for SSH, Cockpit, and Kibana) were strictly locked to the administrator's public IP (`/32` CIDR). This prevented attackers from pivoting from a compromised honeypot container into the management dashboard.
+
+**Decision 2: Minimal IAM Role**
+The EC2 instance was assigned an IAM role with only `AmazonSSMManagedInstanceCore`. If an attacker broke out of a Docker container and achieved host-level code execution, their AWS privileges were null.
+
+**Decision 3: Swap Provisioning for Stability**
+T-Pot's 41 containers (specifically Elasticsearch) exceeded the 8GB of RAM. Instead of upgrading the EC2 instance, we provisioned an 8GB swapfile with `vm.swappiness=10`. This allowed the system to survive traffic spikes without the Linux OOM killer terminating the logging pipeline.
+
+## Threat Intelligence & Attack Metrics (17 Days)
+
+### Volume
+- **Total Attacks:** 662,000+
+- **Top Honeypots Triggered:** Sentrypeer (235k), Honeytrap (226k), RDPHoneypot (71k), Cowrie (48k), Mailoney (36k).
+- **Top Targeted Ports:** 5060 (SIP), 3389 (RDP), 25 (SMTP), 445 (SMB), 23 (Telnet).
+
+### Attacker Origins & Reputation
+- **Top Source Countries:** Germany, The Netherlands, United States, Poland, Hong Kong.
+- **Top Attacking ASNs:** Aiscyon B.V. (113,596), IONOS SE (88,676), 31173 Services A (84,806).
+- **Top Attacking IPs:** 194.50.16.198 (95,490), 95.214.53.210 (55,708).
+
+### Exploit Attempts (via Suricata)
+- **Top CVEs:** CVE-2001-0540 (67,932 attempts), CAN-2001-0540 (56,029), CVE-2005-4050 (2,113).
+
+## Key Lessons
+1. **Cloud services are scanned instantly.** Automated SSH brute-force attempts began the moment the EC2 instance received a public IP.
+2. **Memory is the silent bottleneck.** T-Pot looks lightweight, but Elasticsearch requires significant RAM. Swap is a mandatory safety net.
+3. **Threat intelligence is actionable.** By analyzing the Kibana dashboards, we extracted actual ASNs and specific CVE exploit attempts, proving the honeypot successfully collected security data.
+
+## Cost & Teardown
+- **Estimated Cost:** ~$39.94 for 17 days of compute, storage, and data transfer.
+- **Teardown:** The infrastructure was destroyed via `terraform destroy`. All EBS volumes, security groups, and IAM roles were verified deleted to prevent ongoing charges.
